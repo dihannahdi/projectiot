@@ -8,7 +8,7 @@
 
 // Firebase credentials
 #define FIREBASE_HOST "iotproject-de3d8-default-rtdb.firebaseio.com" // Without https:// or /
-#define FIREBASE_AUTH "YOUR_FIREBASE_DATABASE_SECRET" // You need to get this from Firebase console
+#define FIREBASE_AUTH "6QQmheQh54hvM8jJ1RHz6yBOXAFG669ri1qExTbk" // You need to get this from Firebase console
 
 // Game audio notes
 #define NOTE_C3  131
