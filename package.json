@@ -1,0 +1,32 @@
+{
+  "name": "simon-game-dashboard",
+  "version": "1.0.0",
+  "description": "Simon Game with Firebase Integration",
+  "main": "public/app.js",
+  "scripts": {
+    "build": "echo 'No build step required - copying files to public folder...'",
+    "test": "echo 'No tests implemented yet'",
+    "dev": "firebase serve --only hosting",
+    "deploy": "firebase deploy --only hosting"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dihannahdi/projectiot.git"
+  },
+  "keywords": [
+    "simon",
+    "game",
+    "iot",
+    "esp8266",
+    "firebase"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dihannahdi/projectiot/issues"
+  },
+  "homepage": "https://github.com/dihannahdi/projectiot#readme",
+  "devDependencies": {
+    "firebase-tools": "^12.9.1"
+  }
+} 

@@ -1,0 +1,134 @@
+body {
+    background-color: #f5f5f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: #3498db;
+    color: white;
+    font-weight: bold;
+    padding: 12px 20px;
+    border-radius: 10px 10px 0 0;
+}
+
+.level-container {
+    margin-bottom: 20px;
+}
+
+#current-level {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.progress {
+    height: 25px;
+    font-size: 14px;
+    border-radius: 15px;
+    margin-top: 5px;
+}
+
+.progress-bar {
+    background-color: #27ae60;
+    transition: width 0.3s ease;
+}
+
+.notification-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.list-group-item {
+    padding: 10px 15px;
+    border-left: 5px solid transparent;
+    animation: fadeIn 0.5s;
+}
+
+.notification-new-level {
+    border-left-color: #3498db;
+    background-color: #ebf5fb;
+}
+
+.notification-success {
+    border-left-color: #27ae60;
+    background-color: #eafaf1;
+}
+
+.notification-error {
+    border-left-color: #e74c3c;
+    background-color: #fdedec;
+}
+
+.notification-info {
+    border-left-color: #f39c12;
+    background-color: #fef9e7;
+}
+
+.notification-timestamp {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    display: block;
+    margin-top: 5px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#player-display {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+#status-container {
+    padding: 15px;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+}
+
+#status-container.status-new-level {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+#status-container.status-playing {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+#status-container.status-waiting {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+#status-container.status-failed {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+table {
+    background-color: white;
+}
+
+.highscore-row {
+    background-color: #fef9e7 !important;
+    font-weight: bold;
+} 
