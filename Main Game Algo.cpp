@@ -1,14 +1,16 @@
 /* NodeMCU ESP8266 version of Simon Game with Firebase Integration */
 #include <ESP8266WiFi.h>
-#include <FirebaseESP8266.h>
+#include <Firebase.h> // Changed from FirebaseESP8266.h to Firebase.h
 
 // WiFi credentials
 #define WIFI_SSID "YOUR_WIFI_SSID"
 #define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
 
-// Firebase credentials
-#define FIREBASE_HOST "iotproject-de3d8-default-rtdb.firebaseio.com" // Without https:// or /
-#define FIREBASE_AUTH "6QQmheQh54hvM8jJ1RHz6yBOXAFG669ri1qExTbk" // You need to get this from Firebase console
+// Firebase credentials - update to use the new library format
+#define REFERENCE_URL "https://iotproject-de3d8-default-rtdb.firebaseio.com" // No trailing slash
+
+// Initialize Firebase
+Firebase fb(REFERENCE_URL); // Simplified initialization
 
 // Game audio notes
 #define NOTE_C3  131
@@ -16,13 +18,6 @@
 #define NOTE_CS5 554
 #define NOTE_E5  659
 #define NOTE_A5  880
-
-// Firebase data objects
-FirebaseData firebaseData;
-FirebaseJson gameData;
-
-// Session ID for the current game
-String sessionId = "";
 
 // Mapping pin dari Arduino UNO ke NodeMCU
 int led[] = {D4, D1, D2, D3};     // Pengganti pin 12, 11, 10, 9
@@ -42,6 +37,27 @@ boolean gameActive = false;
 unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 200;
 
+// Custom tone function for ESP8266 with volume control
+// volume parameter ranges from 0 (silent) to 10 (maximum volume)
+void playTone(int pin, int frequency, int duration, int volume = 10) {
+  // Menghitung setengah periode (dalam mikrodetik)
+  unsigned long halfPeriod = 1000000L / frequency / 2;
+  unsigned long startTime = millis();
+  
+  // Calculate duty cycle based on volume (1-10)
+  // Lower volume = smaller duty cycle
+  volume = constrain(volume, 1, 10); // Ensure volume is between 1 and 10
+  int onTime = halfPeriod * volume / 10;
+  int offTime = halfPeriod * 2 - onTime; // Maintain the same frequency
+  
+  while (millis() - startTime < duration) {
+    digitalWrite(pin, HIGH);
+    delayMicroseconds(onTime);
+    digitalWrite(pin, LOW);
+    delayMicroseconds(offTime);
+  }
+}
+
 // Generate a unique session ID
 String generateSessionId() {
   // Generate a random alphanumeric string
@@ -53,27 +69,26 @@ String generateSessionId() {
   return result;
 }
 
+// Session ID for the current game
+String sessionId = "";
+
 // Send game state to Firebase
 void updateGameState(String status, int level) {
   if (sessionId == "") return; // Don't update if no session
   
-  gameData.clear();
-  gameData.set("status", status);
-  gameData.set("level", level);
-  gameData.set("timestamp", Firebase.getCurrentTime());
+  // Create a JSON format string for the game state
+  String jsonData = "{\"status\":\"" + status + "\",\"level\":" + level + "}";
   
-  Firebase.updateNode(firebaseData, "/games/" + sessionId + "/state", gameData);
+  // Update the state node
+  fb.setJson("/games/" + sessionId + "/state", jsonData);
 }
 
 // Send score to Firebase when game ends
 void sendGameScore(int score) {
   if (sessionId == "") return; // Don't update if no session
   
-  gameData.clear();
-  gameData.set("finalScore", score);
-  gameData.set("timestamp", Firebase.getCurrentTime());
-  
-  Firebase.updateNode(firebaseData, "/games/" + sessionId, gameData);
+  // Update the final score
+  fb.setInt("/games/" + sessionId + "/finalScore", score);
 }
 
 void connectWiFi() {
@@ -112,13 +127,6 @@ void setup() {
   // Generate a new session ID for this game
   sessionId = generateSessionId();
   
-  // Initialize Firebase
-  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-  Firebase.reconnectWiFi(true);
-  
-  // Set firebaseData timeout
-  firebaseData.setResponseSize(1024);
-  
   // Reset game data
   randomSeed(analogRead(A0)); // gunakan A0 pada NodeMCU
   for (int i = 0; i < 99; i++) {
@@ -139,7 +147,7 @@ void setup() {
 void win() {
   for (int j = 0; j < 4; j++) {
     for (int i = 0; i < 4; i++) {
-      tone(buzzpin, notes[i], 50);
+      playTone(buzzpin, notes[i], 50, 7); // Volume at 7/10
       digitalWrite(led[i], HIGH);
       delay(50);
       digitalWrite(led[i], LOW);
@@ -156,7 +164,7 @@ void loss() {
   sendGameScore(turn - 1);
   
   // Play loss sound
-  tone(buzzpin, NOTE_C3, 500);
+  playTone(buzzpin, NOTE_C3, 500, 10); // Volume at 8/10
   delay(1500);
   
   // Reset game
@@ -181,7 +189,7 @@ void playSeq(int t) {
   updateGameState("playing_sequence", t);
   
   for (int i = 0; i < t; i++) {
-    tone(buzzpin, notes[seq[i]], 500);
+    playTone(buzzpin, notes[seq[i]], 500, 6); // Volume at 6/10
     digitalWrite(led[seq[i]], HIGH);
     delay(500);
     digitalWrite(led[seq[i]], LOW);
@@ -234,13 +242,11 @@ void loop() {
           else {
             seqL = seqL + 1;
             digitalWrite(led[i], HIGH);
-            tone(buzzpin, notes[i], 500);
+            playTone(buzzpin, notes[i], 500, 7); // Volume at 7/10
             
             // Update Firebase with correct button press
-            gameData.clear();
-            gameData.set("buttonPress", i);
-            gameData.set("progress", (String)seqL + "/" + turn);
-            Firebase.updateNode(firebaseData, "/games/" + sessionId + "/state", gameData);
+            String jsonData = "{\"buttonPress\":" + String(i) + ",\"progress\":\"" + String(seqL) + "/" + String(turn) + "\"}";
+            fb.setJson("/games/" + sessionId + "/state", jsonData);
             
             delay(500);
             digitalWrite(led[i], LOW);
