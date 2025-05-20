@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simon Game Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="styles.css">
 
     <!-- update the version number as needed -->
@@ -26,11 +28,20 @@
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
   </head>
   <body>
-    <div class="container mt-4">
-      <div class="row">
-        <div class="col-md-12 text-center">
-          <h1>Simon Game Dashboard</h1>
-          <div class="card mb-4">
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-10">
+          <h1 class="text-center animate__animated animate__fadeInDown">Simon Game Dashboard</h1>
+          
+          <!-- Visual Simon Game Representation -->
+          <div id="simon-visual" class="simon-game mb-4">
+            <div class="simon-btn green" id="visual-btn-0"></div>
+            <div class="simon-btn red" id="visual-btn-1"></div>
+            <div class="simon-btn yellow" id="visual-btn-2"></div>
+            <div class="simon-btn blue" id="visual-btn-3"></div>
+          </div>
+          
+          <div class="card mb-4 animate__animated animate__fadeIn">
             <div class="card-header">
               Player Registration
             </div>
@@ -44,9 +55,11 @@
                   <label for="session-id" class="form-label">Game Session ID</label>
                   <div class="input-group">
                     <input type="text" class="form-control" id="session-id" placeholder="Enter the session ID shown on your device">
-                    <button class="btn btn-primary" id="connect-btn">Connect</button>
+                    <button class="btn btn-primary" id="connect-btn">
+                      <span>Connect</span>
+                    </button>
                   </div>
-                  <small class="text-muted">The session ID is shown on the device's serial monitor when the game starts</small>
+                  <small class="text-muted mt-2 d-block">The session ID is shown on the device's serial monitor when the game starts</small>
                 </div>
               </div>
             </div>
@@ -54,19 +67,20 @@
 
           <div id="game-panel" style="display: none;">
             <div class="row">
-              <div class="col-md-6">
-                <div class="card mb-4">
-                  <div class="card-header">
-                    Game Status
+              <div class="col-lg-6">
+                <div class="card mb-4 animate__animated animate__fadeIn">
+                  <div class="card-header d-flex align-items-center">
+                    <span>Game Status</span>
                   </div>
                   <div class="card-body">
-                    <h2 id="player-display"></h2>
-                    <div id="status-container" class="alert alert-info mb-3">
+                    <h2 id="player-display" class="text-center"></h2>
+                    <div id="status-container" class="alert alert-info mb-4">
                       Waiting for game to start...
                     </div>
                     <div class="game-info">
                       <div class="level-container">
-                        <h3>Level: <span id="current-level">0</span></h3>
+                        <h3>Level</h3>
+                        <span id="current-level">0</span>
                       </div>
                       <div class="progress-container">
                         <label>Progress:</label>
@@ -78,19 +92,25 @@
                   </div>
                 </div>
 
-                <div class="card">
-                  <div class="card-header">Game Notifications</div>
+                <div class="card animate__animated animate__fadeIn">
+                  <div class="card-header d-flex align-items-center justify-content-between">
+                    <span>Game Notifications</span>
+                    <small class="text-white">Live Updates</small>
+                  </div>
                   <div class="card-body">
                     <ul id="notification-list" class="list-group notification-list"></ul>
                   </div>
                 </div>
               </div>
 
-              <div class="col-md-6">
-                <div class="card">
-                  <div class="card-header">Leaderboard</div>
+              <div class="col-lg-6">
+                <div class="card animate__animated animate__fadeIn">
+                  <div class="card-header d-flex align-items-center justify-content-between">
+                    <span>Leaderboard</span>
+                    <small class="text-white">Top Players</small>
+                  </div>
                   <div class="card-body">
-                    <table class="table table-striped">
+                    <table class="table table-hover">
                       <thead>
                         <tr>
                           <th>Rank</th>
@@ -114,5 +134,20 @@
 
     <!-- Firebase SDK (Module version) -->
     <script type="module" src="app.js"></script>
+    
+    <!-- Visual feedback script -->
+    <script>
+      // This script adds visual feedback to the Simon game representation
+      document.addEventListener('DOMContentLoaded', function() {
+        // Function to light up a button
+        window.lightUpButton = function(buttonIndex) {
+          const btn = document.getElementById(`visual-btn-${buttonIndex}`);
+          btn.classList.add('active');
+          setTimeout(() => {
+            btn.classList.remove('active');
+          }, 500);
+        };
+      });
+    </script>
   </body>
 </html>
